@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: microservices
+  template:
+    metadata:
+      labels:
+        app: microservices
+    spec:
+      containers:
+        - name: microservices
+          image: microservices:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_USER
+              value: "vibav"
+            - name: POSTGRES_PASSWORD
+              value: "vibav"
+            - name: POSTGRES_DB
+              value: "db"
+            - name: POSTGRES_HOST
+              value: "database"
+            - name: POSTGRES_PORT
+              value: "5432"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microservices
+spec:
+  selector:
+    app: microservices
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

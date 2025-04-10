@@ -1,0 +1,67 @@
+---
+- name: Build and Deploy Platform to Kubernetes via Ansible
+  hosts: app
+  become: false
+
+  vars:
+    repo_url: "https://github.com/pradhikshaks/platform.git"
+    repo_dest: "/home/pradhikshaks/ansible-deployment/platform"
+    docker_registry: "docker.io"
+    docker_namespace: "pradhikshaks"
+    images:
+      - name: demo-ui
+        context: docker/demo-ui
+      - name: microservices
+        context: docker/microservices
+      - name: postgres-init
+        context: docker/postgres
+
+  tasks:
+    # - name: Ensure Git is installed
+    #   apt:
+    #     name: git
+    #     state: present
+    #   become: true
+
+    - name: Clone the latest code from GitHub
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ repo_dest }}"
+        version: main
+        force: yes
+
+    - name: Build and push Docker images
+      community.docker.docker_image:
+        name: "{{ docker_namespace }}/{{ item.name }}"
+        tag: latest
+        source: build
+        build:
+          path: "{{ repo_dest }}/{{ item.context }}"
+        push: true
+      loop: "{{ images }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+
+    - name: Pull Images on Kubernetes Node
+      ansible.builtin.docker_image:
+        name: "{{ docker_namespace }}/{{ item.name }}"
+        tag: latest
+        source: pull
+      loop: "{{ images }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Check Kubernetes Cluster Availability
+      shell: kubectl cluster-info
+      register: kube_status
+      failed_when: kube_status.rc != 0
+
+    - name: Deploy Postgres DB
+      shell: kubectl apply -f {{ repo_dest }}/docker/postgres-deployment.yaml
+
+    - name: Deploy Microservices
+      shell: kubectl apply -f {{ repo_dest }}/docker/microservices-deployment.yaml
+
+    - name: Deploy Frontend UI
+      shell: kubectl apply -f {{ repo_dest }}/docker/demo-ui-deployment.yaml

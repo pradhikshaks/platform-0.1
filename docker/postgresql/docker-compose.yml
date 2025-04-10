@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  database:
+    image: 'postgres:latest'
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: vibav
+      POSTGRES_PASSWORD: vibav
+      POSTGRES_DB: db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U vibav -d db" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  demo-ui:
+    container_name: demo-ui
+    hostname: demo-ui
+    image: demo-ui:latest
+    build:
+      context: ../../
+      dockerfile: docker/demo-ui/Dockerfile
+    # depends_on:
+    #   - microservices
+    ports:
+      - 8001:8001
+
+  microservices:
+    container_name: microservices
+    hostname: microservices
+    image: microservices:latest
+    build:
+      context: ../../
+      dockerfile: docker/microservices/Dockerfile
+    environment:
+      POSTGRES_USER: vibav
+      POSTGRES_PASSWORD: vibav
+      POSTGRES_DB: db
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - 8080:8080

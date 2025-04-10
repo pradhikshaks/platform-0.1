@@ -1,0 +1,34 @@
+---
+- name: Deploy Platform to Kubernetes via Ansible
+  hosts: app
+  become: false
+
+  vars:
+    images:
+      - { image: 'madhanprasath14/demo-ui', image_tag: 'latest' }
+      - { image: 'madhanprasath14/microservices', image_tag: 'latest' }
+      - { image: 'madhanprasath14/postgres-init', image_tag: 'latest' }
+
+  tasks:
+    - name: Pull all required images
+      ansible.builtin.docker_image:
+        name: "{{ img.image }}"
+        tag: "{{ img.image_tag }}"
+        source: pull
+      loop: "{{ images }}"
+      loop_control:
+        loop_var: img
+
+    - name: Check Kubernetes Cluster Availability
+      shell: kubectl cluster-info
+      register: kube_status
+      failed_when: kube_status.rc != 0
+
+    - name: Deploy Postgres DB
+      shell: kubectl apply -f ../docker/postgres-deployment.yaml
+
+    - name: Deploy Microservices
+      shell: kubectl apply -f ../docker/microservices-deployment.yaml
+
+    - name: Deploy Frontend UI
+      shell: kubectl apply -f ../docker/demo-ui-deployment.yaml

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "vibav"
+            - name: POSTGRES_PASSWORD
+              value: "vibav"
+            - name: POSTGRES_DB
+              value: "db"
+          volumeMounts:
+            - name: db-init-script
+              mountPath: /docker-entrypoint-initdb.d/init.sql
+              subPath: init.sql
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "vibav", "-d", "db"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: db-init-script
+          configMap:
+            name: db-init-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+spec:
+  selector:
+    app: database
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: demo
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: demo
+        tier: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: madhanprasath14/demo-ui
+        ports:
+        - containerPort: 8001
+        env:
+        - name: VITE_API_URL
+          value: "http://172.16.1.101:30080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels: 
+    app: demo
+    tier: frontend
+spec:
+  selector:
+    app: demo
+    tier: frontend
+  ports:
+  - protocol: TCP
+    port: 8001
+    targetPort: 8001
+    nodePort: 30020
+  type: NodePort
