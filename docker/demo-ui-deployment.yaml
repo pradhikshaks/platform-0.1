@@ -41,7 +41,7 @@ spec:
   ports:
   - protocol: TCP
     port: 8002
-    targetPort: 8002
+    targetPort: 8001
     nodePort: 30040
   type: NodePort
 

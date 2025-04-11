@@ -4,8 +4,8 @@ import { getData } from '../utils/Invoke';
 const Home: React.FC = () => {
   const [empolyeeData, setEmployeeData] = useState([]);
   const [projectData, setProjectData] = useState([]);
-  const empolyeeHeader = ['ID', 'NAME', 'ROLE']
-  const projectHeader = ['ID', 'NAME', 'PROJECT']
+  const empolyeeHeader = ['EMPLOYEE ID', 'NAME', 'ROLE']
+  const projectHeader = ['PROJECT ID', 'NAME', 'PROJECT']
 
   useEffect(() => {
     getData('employee')
