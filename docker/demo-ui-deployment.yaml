@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: madhanprasath14/demo-ui
+        image: pradhikshaks/demo-ui
         ports:
         - containerPort: 8001
         env:
@@ -41,5 +41,5 @@ spec:
   - protocol: TCP
     port: 8001
     targetPort: 8001
-    nodePort: 30020
+    nodePort: 30040
   type: NodePort

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: madhanprasath14/microservices
+        image: pradhikshaks/microservices
         env:
         - name: POSTGRES_USER
           value: "vibav"
@@ -50,5 +50,5 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30080
+    nodePort: 30070
   type: NodePort

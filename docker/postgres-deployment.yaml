@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: madhanprasath14/postgres-init
+        image: pradhikshaks/postgres-init
         env:
         - name: POSTGRES_USER
           value: vibav
