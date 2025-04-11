@@ -6,8 +6,8 @@
 # EXPOSE 8002
 # ENTRYPOINT ["yarn","run","dev"]
 
-FROM node:23-alpine
-
+FROM node:18
+    
 WORKDIR /app
 COPY . .
 
