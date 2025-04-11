@@ -22,7 +22,7 @@ spec:
         image: pradhikshaks/demo-ui:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8002  
+        - containerPort: 8001
         env:
         - name: VITE_API_URL
           value: "http://192.168.49.2:30070"

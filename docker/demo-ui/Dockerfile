@@ -7,12 +7,12 @@
 # ENTRYPOINT ["yarn","run","dev"]
 
 FROM node:18
-    
+
 WORKDIR /app
 COPY . .
 
 RUN yarn install
 
-EXPOSE 8002
+EXPOSE 8001
 
 CMD ["yarn", "dev"]
